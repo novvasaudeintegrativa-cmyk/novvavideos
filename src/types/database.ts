@@ -3,6 +3,7 @@
 //   npx supabase gen types typescript --project-id <id> > src/types/database.ts
 
 export type WorkspaceRole = "owner" | "admin" | "editor" | "viewer";
+export type VideoStatus = "draft" | "processing" | "ready" | "error" | "archived";
 
 export interface Database {
   public: {
@@ -79,10 +80,55 @@ export interface Database {
         };
         Relationships: [];
       };
+      videos: {
+        Row: {
+          id: string;
+          project_id: string;
+          name: string;
+          description: string | null;
+          thumbnail_url: string | null;
+          status: VideoStatus;
+          storage_path: string | null;
+          source_url: string | null;
+          duration_seconds: number | null;
+          views_count: number;
+          plays_count: number;
+          cta_clicks_count: number;
+          conversions_count: number;
+          avg_watch_seconds: number | null;
+          completion_rate: number | null;
+          archived_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          project_id: string;
+          name: string;
+          description?: string | null;
+          thumbnail_url?: string | null;
+          status?: VideoStatus;
+          storage_path?: string | null;
+          source_url?: string | null;
+          duration_seconds?: number | null;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          thumbnail_url?: string | null;
+          status?: VideoStatus;
+          storage_path?: string | null;
+          source_url?: string | null;
+          duration_seconds?: number | null;
+          archived_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
-    Enums: Record<string, never>;
+    Enums: {
+      video_status: VideoStatus;
+    };
     CompositeTypes: Record<string, never>;
   };
 }

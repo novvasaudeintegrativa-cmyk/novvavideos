@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createWorkspace } from "./actions";
 
@@ -30,14 +31,16 @@ export default async function DashboardPage({
       {workspaces && workspaces.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {workspaces.map((ws) => (
-            <li
-              key={ws.id}
-              className="flex items-center justify-between rounded-md border border-neutral-200 px-4 py-3"
-            >
-              <div>
-                <p className="font-medium">{ws.name}</p>
-                <p className="text-xs text-neutral-500">{ws.slug}</p>
-              </div>
+            <li key={ws.id}>
+              <Link
+                href={`/dashboard/${ws.slug}`}
+                className="flex items-center justify-between rounded-md border border-neutral-200 px-4 py-3 hover:border-neutral-400"
+              >
+                <div>
+                  <p className="font-medium">{ws.name}</p>
+                  <p className="text-xs text-neutral-500">{ws.slug}</p>
+                </div>
+              </Link>
             </li>
           ))}
         </ul>
