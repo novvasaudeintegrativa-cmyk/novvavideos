@@ -232,6 +232,10 @@ export function VideoPlayer({
         playsInline
         poster={thumbnailUrl ?? undefined}
         muted={isMuted}
+        controlsList="nodownload noremoteplayback noplaybackrate"
+        disablePictureInPicture
+        disableRemotePlayback
+        onContextMenu={(e) => e.preventDefault()}
         className="h-full w-full"
         onClick={togglePlay}
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
