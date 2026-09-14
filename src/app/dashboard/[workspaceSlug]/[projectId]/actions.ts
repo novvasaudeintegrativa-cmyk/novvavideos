@@ -172,6 +172,39 @@ export async function uploadThumbnail(formData: FormData) {
   );
 }
 
+export async function finalizeVideoUpload(input: {
+  workspaceId: string;
+  videoId: string;
+  storagePath: string;
+  durationSeconds: number | null;
+}) {
+  const supabase = await createClient();
+
+  const { data: video } = await supabase
+    .from("videos")
+    .select("storage_path")
+    .eq("id", input.videoId)
+    .single();
+
+  const { error } = await supabase
+    .from("videos")
+    .update({
+      storage_path: input.storagePath,
+      duration_seconds: input.durationSeconds,
+      status: "ready",
+    })
+    .eq("id", input.videoId);
+
+  if (!error && video?.storage_path && video.storage_path !== input.storagePath) {
+    await supabase.storage.from("videos").remove([video.storage_path]);
+  }
+
+  if (error) {
+    return { ok: false as const, error: error.message };
+  }
+  return { ok: true as const };
+}
+
 export async function deleteVideo(formData: FormData) {
   const workspaceSlug = String(formData.get("workspace_slug") ?? "");
   const projectId = String(formData.get("project_id") ?? "");

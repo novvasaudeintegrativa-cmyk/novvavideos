@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateVideo, uploadThumbnail } from "../../actions";
+import { VideoUploader } from "./video-uploader";
 
 export default async function EditVideoPage({
   params,
@@ -37,7 +38,7 @@ export default async function EditVideoPage({
 
   const { data: video } = await supabase
     .from("videos")
-    .select("id, name, description, thumbnail_url, status")
+    .select("id, name, description, thumbnail_url, status, storage_path, duration_seconds")
     .eq("id", videoId)
     .eq("project_id", projectId)
     .single();
@@ -100,10 +101,20 @@ export default async function EditVideoPage({
 
       <section className="flex flex-col gap-3 rounded-md border border-neutral-200 p-4">
         <p className="text-sm font-medium">Arquivo de vídeo</p>
-        <p className="text-sm text-neutral-500">
-          Status atual: <span className="font-medium">{video.status}</span>. O upload e a
-          validação do arquivo (MP4 H.264/AAC) entram na próxima etapa desta plataforma.
-        </p>
+        <VideoUploader
+          workspaceId={workspace.id}
+          videoId={video.id}
+          currentStatus={video.status}
+          hasExistingFile={Boolean(video.storage_path)}
+        />
+        {video.status === "ready" && (
+          <p className="text-sm text-neutral-500">
+            Duração: {video.duration_seconds ? `${Math.round(video.duration_seconds)}s` : "—"} ·{" "}
+            <Link href={`/p/${video.id}`} target="_blank" className="underline">
+              Ver player público ↗
+            </Link>
+          </p>
+        )}
       </section>
 
       <form action={updateVideo} className="flex flex-col gap-3 rounded-md border border-neutral-200 p-4">
