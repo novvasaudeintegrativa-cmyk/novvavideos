@@ -2,6 +2,30 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createUploadUrl, deleteObject } from "@/lib/r2";
+
+/**
+ * R2 não tem RLS como o Postgres/Storage do Supabase — qualquer código aqui
+ * que gere uma URL assinada de escrita precisa checar autorização na mão.
+ */
+async function assertEditorAccess(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  workspaceId: string,
+): Promise<boolean> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data: membership } = await supabase
+    .from("workspace_members")
+    .select("role")
+    .eq("workspace_id", workspaceId)
+    .eq("user_id", user.id)
+    .single();
+
+  return !!membership && ["owner", "admin", "editor"].includes(membership.role);
+}
 
 function backTo(workspaceSlug: string, projectId: string, error?: string) {
   const base = `/dashboard/${workspaceSlug}/${projectId}`;
@@ -172,6 +196,28 @@ export async function uploadThumbnail(formData: FormData) {
   );
 }
 
+export async function createVideoUploadUrl(input: {
+  workspaceId: string;
+  videoId: string;
+  contentType: string;
+  extension: string;
+}) {
+  const supabase = await createClient();
+
+  if (!(await assertEditorAccess(supabase, input.workspaceId))) {
+    return { ok: false as const, error: "Sem permissão para enviar arquivos neste workspace." };
+  }
+
+  const key = `${input.workspaceId}/${input.videoId}/original.${input.extension}`;
+
+  try {
+    const uploadUrl = await createUploadUrl(key, input.contentType);
+    return { ok: true as const, uploadUrl, key };
+  } catch (err) {
+    return { ok: false as const, error: err instanceof Error ? err.message : "Falha ao gerar URL de upload." };
+  }
+}
+
 export async function finalizeVideoUpload(input: {
   workspaceId: string;
   videoId: string;
@@ -196,7 +242,7 @@ export async function finalizeVideoUpload(input: {
     .eq("id", input.videoId);
 
   if (!error && video?.storage_path && video.storage_path !== input.storagePath) {
-    await supabase.storage.from("videos").remove([video.storage_path]);
+    await deleteObject(video.storage_path).catch(() => {});
   }
 
   if (error) {
@@ -221,7 +267,7 @@ export async function deleteVideo(formData: FormData) {
   const { error } = await supabase.from("videos").delete().eq("id", videoId);
 
   if (!error && video?.storage_path) {
-    await supabase.storage.from("videos").remove([video.storage_path]);
+    await deleteObject(video.storage_path).catch(() => {});
   }
 
   backTo(workspaceSlug, projectId, error?.message);

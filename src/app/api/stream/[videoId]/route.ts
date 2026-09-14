@@ -1,21 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
+import { createDownloadUrl } from "@/lib/r2";
 
-const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
-  mp4: "video/mp4",
-  webm: "video/webm",
-  mov: "video/quicktime",
-};
+// Duração da URL assinada: precisa cobrir a sessão inteira de visualização
+// (o navegador reaproveita essa mesma URL pra todos os pedidos de Range
+// durante o play/seek), não só o primeiro request. 6h é generoso o
+// suficiente pra qualquer sessão real sem virar uma URL "permanente".
+const SIGNED_URL_TTL_SECONDS = 6 * 60 * 60;
 
-function contentTypeFor(storagePath: string): string {
-  const extension = storagePath.split(".").pop()?.toLowerCase() ?? "";
-  return CONTENT_TYPE_BY_EXTENSION[extension] ?? "application/octet-stream";
-}
-
-// Rota pública: serve o vídeo sem exigir sessão logada (o player e o embed
-// são consumidos por visitantes anônimos). A segurança está em nunca expor
-// o caminho real do arquivo nem a URL assinada ao cliente — geramos uma
-// URL assinada de vida curta aqui dentro e só repassamos os bytes.
+// Rota pública: redireciona pro arquivo real no R2 via URL assinada de
+// vida curta, gerada só aqui no backend. Diferente de um proxy, os bytes
+// do vídeo trafegam direto do R2 pro navegador — o R2 não cobra egress,
+// então isso evita custo de banda da própria Vercel em escala (tráfego
+// pago/alto volume). Segurança: nunca expomos o caminho real do arquivo
+// permanentemente, nunca persistimos a URL assinada, e o vídeo só fica
+// acessível enquanto status = "ready".
 export async function GET(request: NextRequest, { params }: { params: Promise<{ videoId: string }> }) {
   const { videoId } = await params;
   const supabase = createAdminClient();
@@ -30,36 +29,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: "Vídeo não encontrado ou não disponível." }, { status: 404 });
   }
 
-  const { data: signed, error: signError } = await supabase.storage
-    .from("videos")
-    .createSignedUrl(video.storage_path, 60);
-
-  if (signError || !signed?.signedUrl) {
+  try {
+    const signedUrl = await createDownloadUrl(video.storage_path, SIGNED_URL_TTL_SECONDS);
+    return NextResponse.redirect(signedUrl, { status: 302 });
+  } catch {
     return NextResponse.json({ error: "Não foi possível gerar acesso ao arquivo." }, { status: 500 });
   }
-
-  const range = request.headers.get("range");
-  const upstream = await fetch(signed.signedUrl, {
-    headers: range ? { Range: range } : {},
-  });
-
-  if (!upstream.ok && upstream.status !== 206) {
-    return NextResponse.json({ error: "Falha ao carregar o arquivo de vídeo." }, { status: 502 });
-  }
-
-  const headers = new Headers();
-  headers.set("Content-Type", contentTypeFor(video.storage_path));
-  headers.set("Accept-Ranges", "bytes");
-  headers.set("Cache-Control", "private, max-age=0, must-revalidate");
-  headers.set("Access-Control-Allow-Origin", "*");
-
-  const contentLength = upstream.headers.get("content-length");
-  if (contentLength) headers.set("Content-Length", contentLength);
-  const contentRange = upstream.headers.get("content-range");
-  if (contentRange) headers.set("Content-Range", contentRange);
-
-  return new NextResponse(upstream.body, {
-    status: upstream.status,
-    headers,
-  });
 }

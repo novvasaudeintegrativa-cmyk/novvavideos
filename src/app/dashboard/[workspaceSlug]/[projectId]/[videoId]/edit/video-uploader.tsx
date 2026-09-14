@@ -2,9 +2,8 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { validateVideoFile, ACCEPTED_MIME_TYPES } from "@/lib/video-validation";
-import { finalizeVideoUpload } from "../../actions";
+import { createVideoUploadUrl, finalizeVideoUpload } from "../../actions";
 import type { VideoStatus } from "@/types/database";
 
 type Stage = "idle" | "validating" | "invalid" | "ready-to-upload" | "uploading" | "done" | "upload-error";
@@ -67,27 +66,24 @@ export function VideoUploader({
     setProgress(0);
     setErrorMessage(null);
 
-    const supabase = createClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    const extension = EXTENSION_BY_MIME[file.type] ?? "mp4";
 
-    if (!session) {
+    const ticket = await createVideoUploadUrl({
+      workspaceId,
+      videoId,
+      contentType: file.type,
+      extension,
+    });
+
+    if (!ticket.ok) {
       setStage("upload-error");
-      setErrorMessage("Sessão expirada. Recarregue a página e faça login novamente.");
+      setErrorMessage(ticket.error);
       return;
     }
 
-    const extension = EXTENSION_BY_MIME[file.type] ?? "mp4";
-    const path = `${workspaceId}/${videoId}/original.${extension}`;
-    const uploadUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/videos/${path}`;
-
     const uploadResult = await new Promise<{ ok: boolean; error?: string }>((resolve) => {
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", uploadUrl);
-      xhr.setRequestHeader("Authorization", `Bearer ${session.access_token}`);
-      xhr.setRequestHeader("apikey", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "");
-      xhr.setRequestHeader("x-upsert", "true");
+      xhr.open("PUT", ticket.uploadUrl);
       xhr.setRequestHeader("Content-Type", file.type);
 
       xhr.upload.onprogress = (event) => {
@@ -117,7 +113,7 @@ export function VideoUploader({
     const finalizeResult = await finalizeVideoUpload({
       workspaceId,
       videoId,
-      storagePath: path,
+      storagePath: ticket.key,
       durationSeconds: durationRef.current,
     });
 
