@@ -16,8 +16,8 @@ export default function DemoDashboardPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <div>
-        <h1 className="text-xl font-semibold">{demoWorkspace.name}</h1>
-        <p className="text-sm text-neutral-500">
+        <h1 className="section-title text-xl">{demoWorkspace.name}</h1>
+        <p className="text-sm text-muted-foreground">
           Explore a biblioteca de vídeos com dados fictícios. Nada aqui é salvo.
         </p>
       </div>
@@ -25,13 +25,13 @@ export default function DemoDashboardPage() {
       {demoProjects.map((project) => (
         <section key={project.id} className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-medium">{project.name}</h2>
-            <span className="text-xs text-neutral-500">{project.videoCount} vídeo(s)</span>
+            <h2 className="section-title">{project.name}</h2>
+            <span className="text-xs text-muted-foreground">{project.videoCount} vídeo(s)</span>
           </div>
 
-          <div className="overflow-x-auto rounded-md border border-neutral-200">
+          <div className="overflow-x-auto rounded-md border border-border bg-card">
             <table className="w-full text-left text-sm">
-              <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
+              <thead className="bg-muted text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-4 py-2">Vídeo</th>
                   <th className="px-4 py-2">Status</th>
@@ -46,7 +46,7 @@ export default function DemoDashboardPage() {
                 {demoVideos
                   .filter((v) => v.projectId === project.id)
                   .map((video) => (
-                    <tr key={video.id} className="border-t border-neutral-100">
+                    <tr key={video.id} className="border-t border-border">
                       <td className="px-4 py-2 font-medium">{video.name}</td>
                       <td className="px-4 py-2">
                         <span

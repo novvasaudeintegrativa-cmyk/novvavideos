@@ -9,11 +9,11 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
           Ir para o login real
         </Link>
       </div>
-      <header className="flex items-center justify-between border-b border-neutral-200 px-6 py-3">
-        <Link href="/demo" className="font-semibold">
-          Novva Videos <span className="text-neutral-400">· demo</span>
+      <header className="flex items-center justify-between border-b border-border bg-card px-6 py-3">
+        <Link href="/demo" className="section-title text-lg">
+          Novva Videos <span className="text-muted-foreground">· demo</span>
         </Link>
-        <span className="text-sm text-neutral-500">demo@exemplo.com</span>
+        <span className="text-sm text-muted-foreground">demo@exemplo.com</span>
       </header>
       <main className="flex-1 px-6 py-8">{children}</main>
     </div>

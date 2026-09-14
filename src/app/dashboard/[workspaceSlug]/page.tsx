@@ -33,11 +33,11 @@ export default async function WorkspacePage({
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href="/dashboard" className="text-sm text-neutral-500 underline">
+        <Link href="/dashboard" className="text-sm text-muted-foreground underline">
           ← Todos os workspaces
         </Link>
-        <h1 className="mt-2 text-xl font-semibold">{workspace.name}</h1>
-        <p className="text-sm text-neutral-500">
+        <h1 className="section-title mt-2 text-xl">{workspace.name}</h1>
+        <p className="text-sm text-muted-foreground">
           Projetos organizam seus vídeos dentro deste workspace.
         </p>
       </div>
@@ -52,12 +52,12 @@ export default async function WorkspacePage({
             <li key={project.id}>
               <Link
                 href={`/dashboard/${workspace.slug}/${project.id}`}
-                className="flex items-center justify-between rounded-md border border-neutral-200 px-4 py-3 hover:border-neutral-400"
+                className="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 hover:border-brand/40"
               >
                 <div>
                   <p className="font-medium">{project.name}</p>
                   {project.description && (
-                    <p className="text-xs text-neutral-500">{project.description}</p>
+                    <p className="text-xs text-muted-foreground">{project.description}</p>
                   )}
                 </div>
               </Link>
@@ -65,7 +65,7 @@ export default async function WorkspacePage({
           ))}
         </ul>
       ) : (
-        <p className="rounded-md border border-dashed border-neutral-300 px-4 py-6 text-center text-sm text-neutral-500">
+        <p className="rounded-md border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
           Nenhum projeto ainda. Crie o primeiro abaixo.
         </p>
       )}
@@ -76,11 +76,11 @@ export default async function WorkspacePage({
           name="name"
           placeholder="Nome do projeto"
           required
-          className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className="flex-1 rounded-md border border-border bg-card px-3 py-2 text-sm"
         />
         <button
           type="submit"
-          className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:bg-brand-hover"
         >
           Criar projeto
         </button>

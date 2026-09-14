@@ -38,12 +38,12 @@ export default async function EmbedPage({
       <div>
         <Link
           href={`/dashboard/${workspace.slug}/${project.id}/${video.id}/edit`}
-          className="text-sm text-neutral-500 underline"
+          className="text-sm text-muted-foreground underline"
         >
           ← {video.name}
         </Link>
-        <h1 className="mt-2 text-xl font-semibold">Embed</h1>
-        <p className="text-sm text-neutral-500">
+        <h1 className="section-title mt-2 text-xl">Embed</h1>
+        <p className="text-sm text-muted-foreground">
           Coloque este vídeo em qualquer página externa, com ou sem CTAs.
         </p>
       </div>

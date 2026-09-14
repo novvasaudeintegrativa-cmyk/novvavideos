@@ -11,8 +11,8 @@ export default async function SignupPage({
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 px-4">
       <div>
-        <h1 className="text-2xl font-semibold">Criar conta</h1>
-        <p className="text-sm text-neutral-500">Comece a usar a plataforma.</p>
+        <h1 className="section-title text-2xl">Criar conta</h1>
+        <p className="text-sm text-muted-foreground">Comece a usar a plataforma.</p>
       </div>
 
       {error && (
@@ -29,7 +29,7 @@ export default async function SignupPage({
             name="full_name"
             type="text"
             autoComplete="name"
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           />
         </div>
 
@@ -43,7 +43,7 @@ export default async function SignupPage({
             type="email"
             required
             autoComplete="email"
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           />
         </div>
 
@@ -58,21 +58,21 @@ export default async function SignupPage({
             required
             minLength={8}
             autoComplete="new-password"
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           />
         </div>
 
         <button
           type="submit"
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-foreground hover:bg-brand-hover"
         >
           Criar conta
         </button>
       </form>
 
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-muted-foreground">
         Já tem conta?{" "}
-        <Link href="/login" className="font-medium text-neutral-900 underline">
+        <Link href="/login" className="font-medium text-foreground underline">
           Entrar
         </Link>
       </p>

@@ -11,8 +11,8 @@ export default async function LoginPage({
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 px-4">
       <div>
-        <h1 className="text-2xl font-semibold">Entrar</h1>
-        <p className="text-sm text-neutral-500">Acesse sua conta para continuar.</p>
+        <h1 className="section-title text-2xl">Entrar</h1>
+        <p className="text-sm text-muted-foreground">Acesse sua conta para continuar.</p>
       </div>
 
       {error && (
@@ -30,7 +30,7 @@ export default async function LoginPage({
             type="email"
             required
             autoComplete="email"
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           />
         </div>
 
@@ -44,27 +44,27 @@ export default async function LoginPage({
             type="password"
             required
             autoComplete="current-password"
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           />
         </div>
 
         <button
           type="submit"
-          className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-brand px-3 py-2 text-sm font-medium text-brand-foreground hover:bg-brand-hover"
         >
           Entrar
         </button>
       </form>
 
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-muted-foreground">
         Não tem conta?{" "}
-        <Link href="/signup" className="font-medium text-neutral-900 underline">
+        <Link href="/signup" className="font-medium text-foreground underline">
           Criar conta
         </Link>
       </p>
 
-      <div className="border-t border-neutral-200 pt-4 text-center">
-        <Link href="/demo" className="text-sm font-medium text-neutral-900 underline">
+      <div className="border-t border-border pt-4 text-center">
+        <Link href="/demo" className="text-sm font-medium text-foreground underline">
           Ver demonstração sem login →
         </Link>
       </div>

@@ -52,15 +52,15 @@ export default async function EditVideoPage({
       <div>
         <Link
           href={`/dashboard/${workspace.slug}/${project.id}`}
-          className="text-sm text-neutral-500 underline"
+          className="text-sm text-muted-foreground underline"
         >
           ← {project.name}
         </Link>
         <div className="mt-2 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">{video.name}</h1>
+          <h1 className="section-title text-xl">{video.name}</h1>
           <Link
             href={`/dashboard/${workspace.slug}/${project.id}/${video.id}/embed`}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm font-medium hover:bg-neutral-50"
+            className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-muted"
           >
             Embed
           </Link>
@@ -70,8 +70,8 @@ export default async function EditVideoPage({
       {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
       {saved && <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">{saved}</p>}
 
-      <section className="flex flex-col gap-3 rounded-md border border-neutral-200 p-4">
-        <p className="text-sm font-medium">Thumbnail</p>
+      <section className="flex flex-col gap-3 rounded-md border border-border p-4">
+        <p className="section-title text-sm">Thumbnail</p>
         {video.thumbnail_url ? (
           <Image
             src={video.thumbnail_url}
@@ -79,10 +79,10 @@ export default async function EditVideoPage({
             width={320}
             height={180}
             unoptimized
-            className="rounded-md border border-neutral-200 object-cover"
+            className="rounded-md border border-border object-cover"
           />
         ) : (
-          <div className="flex h-40 w-full max-w-xs items-center justify-center rounded-md border border-dashed border-neutral-300 text-xs text-neutral-400">
+          <div className="flex h-40 w-full max-w-xs items-center justify-center rounded-md border border-dashed border-border text-xs text-muted-foreground">
             Sem thumbnail
           </div>
         )}
@@ -99,16 +99,16 @@ export default async function EditVideoPage({
           />
           <button
             type="submit"
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm font-medium hover:bg-neutral-50"
+            className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-muted"
           >
             Enviar
           </button>
         </form>
-        <p className="text-xs text-neutral-500">PNG, JPEG ou WebP, até 5MB.</p>
+        <p className="text-xs text-muted-foreground">PNG, JPEG ou WebP, até 5MB.</p>
       </section>
 
-      <section className="flex flex-col gap-3 rounded-md border border-neutral-200 p-4">
-        <p className="text-sm font-medium">Arquivo de vídeo</p>
+      <section className="flex flex-col gap-3 rounded-md border border-border p-4">
+        <p className="section-title text-sm">Arquivo de vídeo</p>
         <VideoUploader
           workspaceId={workspace.id}
           videoId={video.id}
@@ -116,7 +116,7 @@ export default async function EditVideoPage({
           hasExistingFile={Boolean(video.storage_path)}
         />
         {video.status === "ready" && (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             Duração: {video.duration_seconds ? `${Math.round(video.duration_seconds)}s` : "—"} ·{" "}
             <Link href={`/p/${video.id}`} target="_blank" className="underline">
               Ver player público ↗
@@ -125,7 +125,7 @@ export default async function EditVideoPage({
         )}
       </section>
 
-      <form action={updateVideo} className="flex flex-col gap-3 rounded-md border border-neutral-200 p-4">
+      <form action={updateVideo} className="flex flex-col gap-3 rounded-md border border-border p-4">
         <input type="hidden" name="workspace_slug" value={workspace.slug} />
         <input type="hidden" name="project_id" value={project.id} />
         <input type="hidden" name="video_id" value={video.id} />
@@ -139,7 +139,7 @@ export default async function EditVideoPage({
             name="name"
             defaultValue={video.name}
             required
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           />
         </div>
 
@@ -152,13 +152,13 @@ export default async function EditVideoPage({
             name="description"
             defaultValue={video.description ?? ""}
             rows={3}
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-md border border-border px-3 py-2 text-sm"
           />
         </div>
 
         <button
           type="submit"
-          className="self-start rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          className="self-start rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:bg-brand-hover"
         >
           Salvar
         </button>

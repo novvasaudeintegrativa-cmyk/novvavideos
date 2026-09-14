@@ -148,7 +148,7 @@ export function VideoUploader({
             onChange={handleFileSelect}
             className="text-sm"
           />
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-muted-foreground">
             MP4 (H.264/AAC) ou WebM, até 5GB. Se o arquivo for rejeitado, converta para MP4 com
             codec de vídeo H.264 e áudio AAC antes de enviar.
           </p>
@@ -156,7 +156,7 @@ export function VideoUploader({
       )}
 
       {stage === "validating" && (
-        <p className="text-sm text-neutral-600">Validando arquivo no navegador…</p>
+        <p className="text-sm text-muted-foreground">Validando arquivo no navegador…</p>
       )}
 
       {stage === "invalid" && (
@@ -165,7 +165,7 @@ export function VideoUploader({
           <button
             type="button"
             onClick={reset}
-            className="self-start rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+            className="self-start rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
           >
             Escolher outro arquivo
           </button>
@@ -174,20 +174,20 @@ export function VideoUploader({
 
       {stage === "ready-to-upload" && previewUrl && (
         <div className="flex flex-col gap-2">
-          <video src={previewUrl} controls muted className="max-w-md rounded-md border border-neutral-200" />
+          <video src={previewUrl} controls muted className="max-w-md rounded-md border border-border" />
           <p className="text-sm text-green-700">Arquivo validado — pronto para enviar.</p>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={handleUpload}
-              className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+              className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:bg-brand-hover"
             >
               Enviar vídeo
             </button>
             <button
               type="button"
               onClick={reset}
-              className="rounded-md border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50"
+              className="rounded-md border border-border px-3 py-2 text-sm hover:bg-muted"
             >
               Escolher outro arquivo
             </button>
@@ -197,13 +197,13 @@ export function VideoUploader({
 
       {stage === "uploading" && (
         <div className="flex flex-col gap-2">
-          <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full bg-neutral-900 transition-all"
+              className="h-full bg-brand transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-neutral-600">Enviando… {progress}%</p>
+          <p className="text-sm text-muted-foreground">Enviando… {progress}%</p>
         </div>
       )}
 
@@ -213,7 +213,7 @@ export function VideoUploader({
           <button
             type="button"
             onClick={reset}
-            className="self-start rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+            className="self-start rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
           >
             Tentar novamente
           </button>
@@ -227,7 +227,7 @@ export function VideoUploader({
       )}
 
       {stage === "idle" && hasExistingFile && (
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-muted-foreground">
           Status atual: <span className="font-medium">{currentStatus}</span>. Enviar um novo
           arquivo substitui o atual.
         </p>

@@ -51,3 +51,21 @@ export async function createWorkspace(formData: FormData) {
 
   redirect("/dashboard");
 }
+
+export async function renameWorkspace(formData: FormData) {
+  const workspaceId = String(formData.get("workspace_id") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+
+  if (!name) {
+    redirect("/dashboard?error=" + encodeURIComponent("O nome não pode ficar vazio."));
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("workspaces").update({ name }).eq("id", workspaceId);
+
+  if (error) {
+    redirect("/dashboard?error=" + encodeURIComponent(error.message));
+  }
+
+  redirect("/dashboard");
+}

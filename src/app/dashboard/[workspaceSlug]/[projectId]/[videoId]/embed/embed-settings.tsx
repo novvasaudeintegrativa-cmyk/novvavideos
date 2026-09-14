@@ -21,7 +21,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={copy}
-      className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium hover:bg-neutral-50"
+      className="rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted"
     >
       {copied ? "Copiado!" : "Copiar"}
     </button>
@@ -83,7 +83,7 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="flex flex-col gap-3 rounded-md border border-neutral-200 p-4">
+      <section className="flex flex-col gap-3 rounded-md border border-border p-4">
         <p className="text-sm font-medium">Opções</p>
         <div className="flex flex-wrap gap-4 text-sm">
           <label className="flex items-center gap-2">
@@ -97,7 +97,7 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
               disabled={autoplay}
               onChange={(e) => setMuted(e.target.checked)}
             />
-            Mudo {autoplay && <span className="text-xs text-neutral-400">(obrigatório com autoplay)</span>}
+            Mudo {autoplay && <span className="text-xs text-muted-foreground">(obrigatório com autoplay)</span>}
           </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={responsive} onChange={(e) => setResponsive(e.target.checked)} />
@@ -111,7 +111,7 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
               type="number"
               value={width}
               onChange={(e) => setWidth(e.target.value)}
-              className="w-28 rounded-md border border-neutral-300 px-2 py-1 text-sm"
+              className="w-28 rounded-md border border-border px-2 py-1 text-sm"
             />
           </label>
           {!responsive && (
@@ -121,7 +121,7 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
                 type="number"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                className="w-28 rounded-md border border-neutral-300 px-2 py-1 text-sm"
+                className="w-28 rounded-md border border-border px-2 py-1 text-sm"
               />
             </label>
           )}
@@ -136,7 +136,7 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
         <input
           readOnly
           value={playerUrl}
-          className="w-full rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 font-mono text-xs"
+          className="w-full rounded-md border border-border bg-muted px-3 py-2 font-mono text-xs"
         />
       </section>
 
@@ -149,7 +149,7 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
           readOnly
           value={iframeCode}
           rows={7}
-          className="w-full rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 font-mono text-xs"
+          className="w-full rounded-md border border-border bg-muted px-3 py-2 font-mono text-xs"
         />
       </section>
 
@@ -157,7 +157,7 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">Código script (recomendado)</p>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-muted-foreground">
               Captura UTMs da página automaticamente e identifica sessão do visitante.
             </p>
           </div>
@@ -167,14 +167,14 @@ export function EmbedSettings({ videoId }: { videoId: string }) {
           readOnly
           value={scriptCode}
           rows={9}
-          className="w-full rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 font-mono text-xs"
+          className="w-full rounded-md border border-border bg-muted px-3 py-2 font-mono text-xs"
         />
       </section>
 
       <section className="flex flex-col gap-2">
         <p className="text-sm font-medium">Preview</p>
         <div
-          className="overflow-hidden rounded-md border border-neutral-200 bg-black"
+          className="overflow-hidden rounded-md border border-border bg-black"
           style={{ maxWidth: responsive ? `${width}px` : undefined }}
         >
           <div style={{ position: "relative", paddingTop: "56.25%" }}>
