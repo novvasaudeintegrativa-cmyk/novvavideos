@@ -3,16 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { VideoStatus } from "@/types/database";
 
-function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const mm = h > 0 ? String(m).padStart(2, "0") : String(m);
-  const ss = String(s).padStart(2, "0");
-  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
-}
-
 function PlayIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -341,10 +331,6 @@ export function VideoPlayer({
               className="hidden w-16 accent-white sm:block"
             />
           </div>
-
-          <span className="text-xs tabular-nums text-white/90">
-            {formatTime(currentTime)} / {formatTime(duration)}
-          </span>
 
           <div className="flex-1" />
 
