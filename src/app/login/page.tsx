@@ -62,6 +62,12 @@ export default async function LoginPage({
           Criar conta
         </Link>
       </p>
+
+      <div className="border-t border-neutral-200 pt-4 text-center">
+        <Link href="/demo" className="text-sm font-medium text-neutral-900 underline">
+          Ver demonstração sem login →
+        </Link>
+      </div>
     </div>
   );
 }
