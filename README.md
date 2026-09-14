@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Novva Videos
 
-## Getting Started
+Plataforma própria de vídeos interativos (upload, player, CTAs temporizados, embed e analytics), inspirada em funcionalidades públicas de ferramentas como o Vturb — código e arquitetura próprios.
 
-First, run the development server:
+## Stack
+
+- **Next.js 15** (App Router, TypeScript)
+- **Supabase** — Postgres, Auth e Storage
+- **Tailwind CSS**
+- **Vercel** — hospedagem
+
+## Rodando localmente
 
 ```bash
+npm install
+cp .env.local.example .env.local   # preencha com as credenciais do seu projeto Supabase
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variáveis de ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Veja [.env.local.example](.env.local.example). Em produção (Vercel), configure as mesmas variáveis em **Project Settings → Environment Variables**:
 
-## Learn More
+| Variável | Onde encontrar |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API Keys (Publishable key) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API Keys (Secret key) — **nunca** exponha no navegador |
+| `NEXT_PUBLIC_SITE_URL` | URL pública da aplicação (ex: `https://seu-projeto.vercel.app`) |
 
-To learn more about Next.js, take a look at the following resources:
+## Banco de dados
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+As migrations SQL ficam em [supabase/migrations/](supabase/migrations/) e devem ser rodadas em ordem no **SQL Editor** do Supabase (ou via `supabase db push` se estiver usando a CLI).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estrutura
 
-## Deploy on Vercel
+- `src/app/(login|signup|dashboard)` — autenticação e área logada
+- `src/app/demo` — modo demonstração com dados fictícios, sem login
+- `src/lib/supabase` — clients Supabase (browser, server, admin) e middleware de sessão
+- `src/middleware.ts` — protege rotas autenticadas e renova sessão
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Status
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Fase 1 concluída: autenticação, workspaces isolados por RLS e bucket de storage privado para vídeos. Próxima fase: biblioteca de vídeos (upload, validação, player).
