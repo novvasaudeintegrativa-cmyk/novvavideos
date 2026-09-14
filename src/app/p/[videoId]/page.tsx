@@ -19,8 +19,8 @@ export default async function PublicPlayerPage({
     .single();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black p-4">
-      <div className="w-full max-w-3xl">
+    <div className="flex min-h-screen w-full items-center justify-center bg-black">
+      <div className="w-full">
         <VideoPlayer
           videoId={videoId}
           status={video?.status ?? null}
