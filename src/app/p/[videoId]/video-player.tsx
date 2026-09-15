@@ -9,7 +9,7 @@ const MILESTONES: VideoEventMilestone[] = [25, 50, 75, 100];
 // Avisa a pagina que hospeda o embed (via postMessage, ja que o player
 // roda num iframe cross-origin) pra ela poder integrar com o proprio
 // rastreamento (Meta Pixel, Supabase, etc.) sem depender do nosso banco.
-function postToParent(videoId: string, type: "play" | "progress" | "complete", percent?: VideoEventMilestone) {
+function postToParent(videoId: string, type: "play" | "progress" | "complete", percent?: number) {
   if (typeof window === "undefined" || window.parent === window) return;
   try {
     window.parent.postMessage({ source: "novva-video", type, videoId, percent }, "*");
@@ -90,6 +90,9 @@ export function VideoPlayer({
   const hideControlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasFiredPlay = useRef(false);
   const firedMilestones = useRef<Set<VideoEventMilestone>>(new Set());
+  // 95% so existe no funil de retencao da pagina host (bridge via postMessage) —
+  // nao faz parte do enum de milestone do nosso proprio rastreamento (video_events).
+  const fired95 = useRef(false);
 
   const [stage, setStage] = useState<Stage>(status === "ready" ? "loading" : "error");
   const [hasStarted, setHasStarted] = useState(false);
@@ -261,6 +264,10 @@ export function VideoPlayer({
           const total = e.currentTarget.duration;
           if (!total || Number.isNaN(total)) return;
           const percent = (time / total) * 100;
+          if (percent >= 95 && !fired95.current) {
+            fired95.current = true;
+            postToParent(videoId, "progress", 95);
+          }
           for (const milestone of MILESTONES) {
             if (percent >= milestone && !firedMilestones.current.has(milestone)) {
               firedMilestones.current.add(milestone);
