@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { VideoStatus } from "@/types/database";
+import type { VideoStatus, VideoEventMilestone } from "@/types/database";
+import { sendVideoEvent, type TrackingContext } from "@/lib/video-tracking";
+
+const MILESTONES: VideoEventMilestone[] = [25, 50, 75, 100];
 
 function PlayIcon({ className }: { className?: string }) {
   return (
@@ -61,16 +64,20 @@ export function VideoPlayer({
   thumbnailUrl,
   autoplay = false,
   startMuted = false,
+  tracking,
 }: {
   videoId: string;
   status: VideoStatus | null;
   thumbnailUrl: string | null;
   autoplay?: boolean;
   startMuted?: boolean;
+  tracking: TrackingContext;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hideControlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasFiredPlay = useRef(false);
+  const firedMilestones = useRef<Set<VideoEventMilestone>>(new Set());
 
   const [stage, setStage] = useState<Stage>(status === "ready" ? "loading" : "error");
   const [hasStarted, setHasStarted] = useState(false);
@@ -105,6 +112,13 @@ export function VideoPlayer({
     video.muted = true;
     video.play().then(() => setHasStarted(true)).catch(() => {});
   }, [autoplay, status, attempt]);
+
+  useEffect(() => {
+    if (status !== "ready") return;
+    sendVideoEvent(videoId, tracking, "view");
+    // Dispara só uma vez por montagem do player — sessionId/videoId não mudam em runtime.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   useEffect(() => {
     function onFullscreenChange() {
@@ -229,7 +243,19 @@ export function VideoPlayer({
         className="h-full w-full"
         onClick={togglePlay}
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+        onTimeUpdate={(e) => {
+          const time = e.currentTarget.currentTime;
+          setCurrentTime(time);
+          const total = e.currentTarget.duration;
+          if (!total || Number.isNaN(total)) return;
+          const percent = (time / total) * 100;
+          for (const milestone of MILESTONES) {
+            if (percent >= milestone && !firedMilestones.current.has(milestone)) {
+              firedMilestones.current.add(milestone);
+              sendVideoEvent(videoId, tracking, "progress", milestone);
+            }
+          }
+        }}
         onProgress={(e) => {
           const buf = e.currentTarget.buffered;
           if (buf.length > 0) setBufferedEnd(buf.end(buf.length - 1));
@@ -239,6 +265,10 @@ export function VideoPlayer({
           setHasStarted(true);
           setEnded(false);
           scheduleHideControls();
+          if (!hasFiredPlay.current) {
+            hasFiredPlay.current = true;
+            sendVideoEvent(videoId, tracking, "play");
+          }
         }}
         onPause={() => {
           setIsPlaying(false);

@@ -4,6 +4,8 @@
 
 export type WorkspaceRole = "owner" | "admin" | "editor" | "viewer";
 export type VideoStatus = "draft" | "processing" | "ready" | "error" | "archived";
+export type VideoEventType = "view" | "play" | "progress" | "cta_click";
+export type VideoEventMilestone = 25 | 50 | 75 | 100;
 
 export interface Database {
   public: {
@@ -121,6 +123,36 @@ export interface Database {
           duration_seconds?: number | null;
           archived_at?: string | null;
         };
+        Relationships: [];
+      };
+      video_events: {
+        Row: {
+          id: string;
+          video_id: string;
+          session_id: string;
+          event_type: VideoEventType;
+          milestone: VideoEventMilestone | null;
+          page_url: string | null;
+          utm_source: string | null;
+          utm_medium: string | null;
+          utm_campaign: string | null;
+          utm_term: string | null;
+          utm_content: string | null;
+          created_at: string;
+        };
+        Insert: {
+          video_id: string;
+          session_id: string;
+          event_type: VideoEventType;
+          milestone?: VideoEventMilestone | null;
+          page_url?: string | null;
+          utm_source?: string | null;
+          utm_medium?: string | null;
+          utm_campaign?: string | null;
+          utm_term?: string | null;
+          utm_content?: string | null;
+        };
+        Update: never;
         Relationships: [];
       };
     };
