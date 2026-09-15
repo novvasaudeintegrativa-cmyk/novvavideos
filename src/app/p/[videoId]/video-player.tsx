@@ -6,6 +6,18 @@ import { sendVideoEvent, type TrackingContext } from "@/lib/video-tracking";
 
 const MILESTONES: VideoEventMilestone[] = [25, 50, 75, 100];
 
+// Avisa a pagina que hospeda o embed (via postMessage, ja que o player
+// roda num iframe cross-origin) pra ela poder integrar com o proprio
+// rastreamento (Meta Pixel, Supabase, etc.) sem depender do nosso banco.
+function postToParent(videoId: string, type: "play" | "progress" | "complete", percent?: VideoEventMilestone) {
+  if (typeof window === "undefined" || window.parent === window) return;
+  try {
+    window.parent.postMessage({ source: "novva-video", type, videoId, percent }, "*");
+  } catch {
+    // pagina host pode bloquear postMessage — ignora
+  }
+}
+
 function PlayIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -253,6 +265,8 @@ export function VideoPlayer({
             if (percent >= milestone && !firedMilestones.current.has(milestone)) {
               firedMilestones.current.add(milestone);
               sendVideoEvent(videoId, tracking, "progress", milestone);
+              if (milestone === 100) postToParent(videoId, "complete");
+              else postToParent(videoId, "progress", milestone);
             }
           }
         }}
@@ -268,6 +282,7 @@ export function VideoPlayer({
           if (!hasFiredPlay.current) {
             hasFiredPlay.current = true;
             sendVideoEvent(videoId, tracking, "play");
+            postToParent(videoId, "play");
           }
         }}
         onPause={() => {
